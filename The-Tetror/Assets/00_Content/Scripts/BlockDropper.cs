@@ -7,32 +7,34 @@ public class BlockDropper : MonoBehaviour {
 
 	[SerializeField] private GameObject[] blocks;
 
-	//Where the blocks are instantiated
-	[SerializeField] private GameObject dropSpot;
+	//The position where the blocks are instantiated
+	private Transform dropSpot;
 
 	//Timespan between which each block is spawned
 	[SerializeField][Range(0, 60)] private float spawnSpan;
-	private float sinceSpawn;
+	private float sinceSpawn = 0f;
 
 	//Speed of movement
 	[SerializeField] private float speed;
 
-	[SerializeField] private Vector2 destinationOffset; 
+	[SerializeField] private Vector3 destinationOffset; 
 
-	private Vector2 destination;
-
-	public Vector2 Destination {
-		get { return destination; }
-		set {
-			destination = (value + destinationOffset);
-		}
+	public Vector3 Destination {
+		get { return playerController.GroundedPosition + destinationOffset; }
 	}
+
+	[SerializeField] private PlayerController playerController;
 
 	private Rigidbody2D rigidBody2D;
 
 	private void Start() {
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		rigidBody2D.bodyType = RigidbodyType2D.Dynamic;
+
+		dropSpot = GetComponentInChildren<Transform>();
+		Debug.Assert(dropSpot != null);
+
+		Debug.Assert(playerController != null);
 	}
 
 	void Update() {
@@ -46,13 +48,12 @@ public class BlockDropper : MonoBehaviour {
 	}
 
 	private void FixedUpdate() {
-		if (destination != null) {
+		if (Destination != null) {
 			// Calculate the direction towards the target
-			Vector2 direction = Destination - (Vector2)transform.position;
+			Vector2 direction = Destination - transform.position;
 
 			// Move towards the target using MovePosition
-			Vector2 newPosition = rigidBody2D.position + speed * Time.deltaTime * direction.normalized;
-			rigidBody2D.MovePosition(newPosition);
+			rigidBody2D.AddForce(speed * direction.normalized);
 		}
 	}
 
