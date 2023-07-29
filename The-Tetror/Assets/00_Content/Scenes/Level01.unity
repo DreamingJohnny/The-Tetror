@@ -419,8 +419,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4194976773679957415, guid: a80048587e67d334b8dac61038a5ac2c, type: 3}
-      propertyPath: spawnSpan
-      value: 2
+      propertyPath: maxWaitTime
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 4194976773679957415, guid: a80048587e67d334b8dac61038a5ac2c, type: 3}
       propertyPath: playerController
@@ -549,8 +549,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3428586876571206040, guid: 64994a044f31be64b8b92f04beb21f5b, type: 3}
-      propertyPath: m_GravityScale
-      value: 0.8
+      propertyPath: m_LinearDrag
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5429797419947312781, guid: 64994a044f31be64b8b92f04beb21f5b, type: 3}
       propertyPath: m_Name

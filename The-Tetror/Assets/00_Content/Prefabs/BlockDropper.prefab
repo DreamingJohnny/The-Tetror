@@ -203,13 +203,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1380b82e9ee18e45b386a91e201f6f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
   blocks:
   - {fileID: 2873317128633004643, guid: da71bad3b3a9c6a478108cc0c8aee389, type: 3}
   - {fileID: 910431982619154382, guid: 06c105cd7185c2244ad6955bd96de3cc, type: 3}
   - {fileID: 1357286754725774401, guid: 0ace568476d5fc0408652d8e27d089bf, type: 3}
   - {fileID: 8988784431420455573, guid: ef926d183591f7e478e994d2d6a82405, type: 3}
   - {fileID: 1957315520546577851, guid: d61bb74a8bacc0a419f7f66b1d9b33b7, type: 3}
-  spawnSpan: 10
+  recoilTime: 1.5
+  maxWaitTime: 8
   speed: 3
   destinationOffset: {x: 0, y: 8, z: 0}
   playerController: {fileID: 0}

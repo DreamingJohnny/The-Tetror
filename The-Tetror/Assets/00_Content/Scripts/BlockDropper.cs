@@ -5,19 +5,23 @@ using UnityEngine;
 
 public class BlockDropper : MonoBehaviour {
 
+	[SerializeField] private LayerMask targetLayer;
+
 	[SerializeField] private GameObject[] blocks;
 
-	//The position where the blocks are instantiated
+	[Tooltip("Position where blocks are instantiated")]
 	private Transform dropSpot;
 
-	//Timespan between which each block is spawned
-	[SerializeField][Range(0, 60)] private float spawnSpan;
-	private float sinceSpawn = 0f;
+	[Tooltip("Time that BlockDropper spends motionless after instantiating a block.")]
+	[Range(0.0f, 10.0f)][SerializeField] private float recoilTime;
+	[Tooltip("Maximum time the Blockdropper waits before instantiating block.")]
+	[Range(0f, 60f)][SerializeField] private float maxWaitTime;
+	private float sinceInstantiatingBlock = 0f;
 
-	//Speed of movement
 	[SerializeField] private float speed;
 
-	[SerializeField] private Vector3 destinationOffset; 
+	[Tooltip("Offset between the target and the BlockDroppers position")]
+	[SerializeField] private Vector3 destinationOffset;
 
 	public Vector3 Destination {
 		get { return playerController.GroundedPosition + destinationOffset; }
@@ -35,19 +39,37 @@ public class BlockDropper : MonoBehaviour {
 		Debug.Assert(dropSpot != null);
 
 		Debug.Assert(playerController != null);
+
+		if (maxWaitTime <= recoilTime) { Debug.Log($"{name} has a longer recoile time than the maxWaitTime, the BlockDropper will be unable to move,"); }
 	}
 
 	void Update() {
-		if (sinceSpawn <= spawnSpan) {
-			sinceSpawn += Time.deltaTime;
+
+		if (sinceInstantiatingBlock >= recoilTime) CheckForTarget();
+
+		if (sinceInstantiatingBlock <= maxWaitTime) {
+			sinceInstantiatingBlock += Time.deltaTime;
 		}
-		else {
-			sinceSpawn = 0f;
-			Instantiate(GetRandomBlock(), dropSpot.transform.position, Quaternion.identity);
-		}
+		else { DropBlock(); }
+	}
+
+	private void CheckForTarget() {
+		// Cast a ray downwards from the current position of the object
+		RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, targetLayer);
+
+		if (hit && hit.collider != null) { DropBlock(); }
+	}
+
+	private void DropBlock() {
+		StopBlockDropper(); //Stops the Blockdropper since a new block is about to be instantiated;
+
+		Instantiate(GetRandomBlock(), dropSpot.transform.position, Quaternion.identity);
+		sinceInstantiatingBlock = 0f;
 	}
 
 	private void FixedUpdate() {
+		if (sinceInstantiatingBlock <= recoilTime) return;
+
 		if (Destination != null) {
 			// Calculate the direction towards the target
 			Vector2 direction = Destination - transform.position;
@@ -55,6 +77,10 @@ public class BlockDropper : MonoBehaviour {
 			// Move towards the target using MovePosition
 			rigidBody2D.AddForce(speed * direction.normalized);
 		}
+	}
+
+	private void StopBlockDropper() {
+		rigidBody2D.velocity = Vector2.zero;
 	}
 
 	private GameObject GetRandomBlock() {
