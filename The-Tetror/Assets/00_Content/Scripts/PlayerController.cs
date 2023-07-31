@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,14 +15,15 @@ public class PlayerController : MonoBehaviour {
 	/// </summary>
 	public Vector3 GetGroundedPosition {
 		get {
-			if (IsGrounded()) return transform.position;
+			if (stateOfMovement != StateOfMovement.JUMPING) return transform.position;
 			else return latestGroundedPosition;
 		}
 	}
 
-	private CapsuleCollider2D capsuleCollider2D;
-
 	readonly string groundLayerName = "Ground";
+	readonly string ladderLayerName = "Ladder";
+
+	private StateOfMovement stateOfMovement;
 
 	[SerializeField] private float jumpForce;
 
@@ -34,8 +36,10 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float speed = 15;
 
 	private void Start() {
+
+		stateOfMovement = StateOfMovement.RUNNING;
+
 		rigidBody2D = GetComponent<Rigidbody2D>();
-		capsuleCollider2D = GetComponent<CapsuleCollider2D>();
 	}
 
 	private void Update() {
@@ -47,7 +51,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void Move(Vector2 direction) {
-		rigidBody2D.AddForce(new(direction.x * speed,0f));
+		if (stateOfMovement == StateOfMovement.CLIMBING) rigidBody2D.AddForce(new(0f, direction.y * speed));
+		else rigidBody2D.AddForce(new(direction.x * speed, 0f));
 	}
 
 	private void OnMove(InputValue value) {
@@ -55,16 +60,32 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void OnJump(InputValue value) {
-		if(value.isPressed && IsGrounded()) {
-			Debug.Log(value);
+		if (value.isPressed && stateOfMovement != StateOfMovement.JUMPING) {
+			stateOfMovement = StateOfMovement.JUMPING;
 			latestGroundedPosition = transform.position;
 
+			rigidBody2D.gravityScale = 1f;
 			rigidBody2D.AddForce(new(0f, jumpForce));
 		}
 	}
 
-	private bool IsGrounded() {
-		if (capsuleCollider2D.IsTouchingLayers(LayerMask.GetMask(groundLayerName))) return true;
-		else return false;
+	private void OnTriggerEnter2D(Collider2D collision) {
+		if (stateOfMovement == StateOfMovement.RUNNING) return;
+		else if (collision.gameObject.layer == LayerMask.NameToLayer(ladderLayerName)) {
+			stateOfMovement = StateOfMovement.CLIMBING;
+
+			rigidBody2D.gravityScale = 0f;
+			rigidBody2D.velocity = Vector2.zero;
+			transform.position = new(collision.transform.position.x, transform.position.y);
+		}
+		else if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayerName)) {
+			stateOfMovement = StateOfMovement.RUNNING;
+		}
+	}
+
+	private void OnTriggerExit2D(Collider2D collision) {
+		if (collision.gameObject.layer == LayerMask.NameToLayer(ladderLayerName)) {
+			rigidBody2D.gravityScale = 1f;
+		}
 	}
 }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4817256756048567999}
   - component: {fileID: 4353383581960550003}
   - component: {fileID: 2874233836875713255}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: SquareBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
