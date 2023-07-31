@@ -212,8 +212,8 @@ MonoBehaviour:
   - {fileID: 1357286754725774401, guid: 0ace568476d5fc0408652d8e27d089bf, type: 3}
   - {fileID: 8988784431420455573, guid: ef926d183591f7e478e994d2d6a82405, type: 3}
   - {fileID: 1957315520546577851, guid: d61bb74a8bacc0a419f7f66b1d9b33b7, type: 3}
-  recoilTime: 1.5
-  maxWaitTime: 8
+  recoilTime: 3
+  maxWaitTime: 25
   speed: 3
   destinationOffset: {x: 0, y: 8, z: 0}
   playerController: {fileID: 0}

@@ -13,7 +13,7 @@ public class BlockDropper : MonoBehaviour {
 	private Transform dropSpot;
 
 	[Tooltip("Time that BlockDropper spends motionless after instantiating a block.")]
-	[Range(0.0f, 10.0f)][SerializeField] private float recoilTime;
+	[Range(1.5f, 10.0f)][SerializeField] private float recoilTime;
 	[Tooltip("Maximum time the Blockdropper waits before instantiating block.")]
 	[Range(0f, 60f)][SerializeField] private float maxWaitTime;
 	private float sinceInstantiatingBlock = 0f;
@@ -23,8 +23,10 @@ public class BlockDropper : MonoBehaviour {
 	[Tooltip("Offset between the target and the BlockDroppers position")]
 	[SerializeField] private Vector3 destinationOffset;
 
+	//Not happy with this needing to be a player controller here, will look later at making it gameObject and having a TryGetComponent for grounded position,
+	//and a overload that goes for transform.position
 	public Vector3 Destination {
-		get { return playerController.GroundedPosition + destinationOffset; }
+		get { return playerController.GetGroundedPosition + destinationOffset; }
 	}
 
 	[SerializeField] private PlayerController playerController;
@@ -54,7 +56,6 @@ public class BlockDropper : MonoBehaviour {
 	}
 
 	private void CheckForTarget() {
-		// Cast a ray downwards from the current position of the object
 		RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, targetLayer);
 
 		if (hit && hit.collider != null) { DropBlock(); }
